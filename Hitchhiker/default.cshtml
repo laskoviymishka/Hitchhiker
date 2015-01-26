@@ -1,0 +1,85 @@
+﻿@inherits ViewPage
+@{
+	ViewBag.Title = "Hello World Service";
+}
+<script>
+	var app = angular.module('helloApp', []);
+
+	app.controller('helloCtrl', ['$scope', '$http',
+        function ($scope, $http) {
+        	$scope.click = function () {
+        		if ($scope.origination && $scope.destination) {
+        			$http.get('/route?Origination=' + $scope.origination + '&Destination=' + $scope.destination)
+                        .success(function (response) {
+                        	console.log(response);
+                        	$scope.routeResult = response;
+                        });
+        		}
+        	};
+        }
+	]);
+</script>
+<div ng-app="helloApp">
+	<div ng-controller="helloCtrl">
+		<div>
+			<input class="form-control input-lg" ng-model="origination" id="Origination" type="text" placeholder="Origination">
+		</div>
+		<div>
+			<input class="form-control input-lg" ng-model="destination" id="Destination" type="text" placeholder="Destination">
+		</div>
+		<div class="btn-danger" ng-click="click()">Push to get route</div>
+		<div>
+			<p ng-bind="routeResult" style="margin-top: 15px;font-size: large" ng-show="routeResult"></p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="container">
+			<div class="col-md-6">
+				<form action='/auth/credentials' method='POST'>
+					<dl>
+						<dt>User Name:</dt>
+						<dd><input type='text' name='UserName' /></dd>
+						<dt>Password:</dt>
+						<dd><input type='password' name='Password' /></dd>
+					</dl>
+					<input type='submit' value='Sign In' />
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<form id="form-register" action="@(new Register().ToPostUrl())" method="POST">
+			<input type="hidden" name="AutoLogin" value="true" />
+			<div class="form-group">
+				<input class="form-control input-lg" type="text" name="FirstName" placeholder="First Name">
+				<span class="help-block"></span>
+			</div>
+			<div class="form-group">
+				<input class="form-control input-lg" type="text" name="LastName" placeholder="Last Name">
+				<span class="help-block"></span>
+			</div>
+			<div class="form-group">
+				<input class="form-control input-lg" type="text" name="Email" placeholder="Email">
+				<span class="help-block"></span>
+			</div>
+			<div class="form-group">
+				<input class="form-control input-lg" type="password" name="Password" placeholder="Password">
+				<span class="help-block"></span>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-lg btn-default" type="submit">Register</button>
+			</div>
+			<div class="clearfix"></div>
+		</form>
+
+		<script>
+			$("#form-register").bindForm({
+				success: function (r) {
+					localStorage["UserName"] = $("#Email").val();
+					$(document).trigger('signed-in');
+				}
+			});
+		</script>
+	</div>
+</div>
